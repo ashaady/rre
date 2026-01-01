@@ -96,14 +96,16 @@ export default function AdminDashboard() {
     today.setHours(0, 0, 0, 0);
 
     const ordersToday = orders.filter(
-      (o) => new Date(o.createdAt) >= today
+      (o) => new Date(o.created_at) >= today
     );
 
     const activeOrders = orders.filter(
       (o) => !["delivered", "cancelled"].includes(o.status)
     );
 
-    const revenue = ordersToday.reduce((sum, o) => sum + o.total, 0);
+    const paidOrders = ordersToday.filter((o) => o.status === "paid");
+
+    const revenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
 
     return {
       total: ordersToday.length,
