@@ -39,68 +39,9 @@ interface Order {
   delivery_address?: string;
 }
 
-// Mock orders for admin dashboard
-const mockOrders: Order[] = [
-  {
-    id: "order-1",
-    orderNumber: "CM12345678",
-    status: "ready",
-    orderType: "livraison",
-    items: [
-      { product_name: "Menu Classique", quantity: 1, price: 4500 },
-      { product_name: "Frites Sauce", quantity: 1, price: 1500 },
-    ],
-    total: 7000,
-    createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-    customer_name: "Amadou Diop",
-    customer_phone: "77 123 45 67",
-    delivery_address: "Sicap Liberté 6",
-  },
-  {
-    id: "order-2",
-    orderNumber: "CM87654321",
-    status: "preparing",
-    orderType: "emporter",
-    items: [
-      { product_name: "Double Chicken", quantity: 2, price: 4500 },
-    ],
-    total: 9000,
-    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    customer_name: "Fatou Sall",
-    customer_phone: "78 987 65 43",
-  },
-  {
-    id: "order-3",
-    orderNumber: "CM55555555",
-    status: "pending",
-    orderType: "livraison",
-    items: [
-      { product_name: "Menu Famille", quantity: 1, price: 12000 },
-    ],
-    total: 13000,
-    createdAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-    customer_name: "Cheikh Ba",
-    customer_phone: "76 111 22 33",
-    delivery_address: "Mermoz",
-  },
-  {
-    id: "order-4",
-    orderNumber: "CM44444444",
-    status: "confirmed",
-    orderType: "emporter",
-    items: [
-      { product_name: "Chicken Burger Master", quantity: 3, price: 3500 },
-      { product_name: "Frites Classiques", quantity: 2, price: 1000 },
-    ],
-    total: 12500,
-    createdAt: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
-    customer_name: "Mariam Ndiaye",
-    customer_phone: "70 555 66 77",
-  },
-];
-
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   pending: { label: "En attente", color: "bg-gray-100", bgColor: "text-gray-700" },
+  paid: { label: "Payée", color: "bg-green-100", bgColor: "text-green-700" },
   confirmed: { label: "Confirmée", color: "bg-blue-100", bgColor: "text-blue-700" },
   preparing: { label: "En préparation", color: "bg-orange-100", bgColor: "text-orange-700" },
   ready: { label: "Prête", color: "bg-purple-100", bgColor: "text-purple-700" },
@@ -111,6 +52,7 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
 
 const nextStatusMap: Record<string, string> = {
   pending: "confirmed",
+  paid: "confirmed",
   confirmed: "preparing",
   preparing: "ready",
   ready: "out_for_delivery",
