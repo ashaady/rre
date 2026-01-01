@@ -60,7 +60,6 @@ export async function handleCreateOrder(req: Request, res: Response) {
     if (
       !order_number ||
       !customer_name ||
-      !customer_phone ||
       !items ||
       !total ||
       !order_type
