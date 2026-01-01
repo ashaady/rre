@@ -99,111 +99,75 @@ export default function PaymentPage() {
       return;
     }
 
-    if (paymentGateway === "paytech") {
-      // PayTech validation
-      if (!phoneNumber.trim() || !fullName.trim()) {
-        toast.error("Veuillez entrer votre numéro et votre nom complet");
-        return;
-      }
+    // Validate required fields
+    if (!phoneNumber.trim() || !fullName.trim()) {
+      toast.error("Veuillez entrer votre numéro et votre nom complet");
+      return;
     }
 
     setIsProcessing(true);
 
     try {
-      if (paymentGateway === "paytech") {
-        // PayTech flow
-        const paymentInitPayload = {
-          item_name: `Commande ${order.order_number}`,
-          item_price: order.total,
-          command_name: `Commande de nourriture - ${order.items.map((i) => i.product_name).join(", ")}`,
-          target_payment: selectedMethod === "orange-money" ? "Orange Money" : "",
-          phone_number: phoneNumber.startsWith("+") ? phoneNumber : `+${phoneNumber}`,
-          full_name: fullName,
-          custom_field: {
-            order_id: order.id,
-            user_id: "user_" + Date.now(), // Generate a simple user ID
-            email: "", // Optional
-          },
-        };
-
-        const { data: paymentResult, error: paymentError } =
-          await paytech.createPayment(paymentInitPayload);
-
-        if (paymentError || !paymentResult) {
-          const errorMsg =
-            paymentError?.message ||
-            "Erreur lors de l'initialisation du paiement PayTech";
-          toast.error(`❌ ${errorMsg}`);
-          setIsProcessing(false);
-          return;
-        }
-
-        // Show success message
-        toast.success("✅ Redirection vers PayTech...");
-
-        // Wait a moment then redirect to PayTech
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        const redirectUrl = (paymentResult as any).redirect_url;
-        if (redirectUrl) {
-          // Redirect to PayTech payment page
-          window.location.href = redirectUrl;
-        } else {
-          toast.error("❌ URL de paiement non reçue");
-          setIsProcessing(false);
-        }
-      } else {
-        // PayDunya flow (existing code)
-        // Update payment method if changed
-        if (selectedMethod !== payment.payment_method) {
-          const { data: updated } = await payments.update(payment.id, {
-            payment_method: selectedMethod,
-          });
-          if (updated) {
-            setPayment(updated as any);
-          }
-        }
-
-        // Prepare payload for PayDunya initialization
-        const paymentInitPayload = {
+      // PayTech payment flow
+      const paymentInitPayload = {
+        item_name: `Commande ${order.order_number}`,
+        item_price: order.total,
+        command_name: `Commande de nourriture - ${order.items.map((i) => i.product_name).join(", ")}`,
+        target_payment: "Orange Money",
+        phone_number: phoneNumber.startsWith("+") ? phoneNumber : `+221${phoneNumber}`,
+        full_name: fullName,
+        custom_field: {
           order_id: order.id,
-          payment_id: payment.id,
-          total: order.total,
-          payment_method: selectedMethod,
-          order_number: order.order_number,
-          items: order.items,
-          customer_name: order.customer_name,
-          customer_phone: order.customer_phone,
-          order_type: order.order_type,
-        };
+          user_id: `user_${Date.now()}`,
+          email: "",
+        },
+      };
 
-        // Call PayDunya initialize endpoint
-        const { data: paymentResult, error: paymentError } =
-          await paydunya.initialize(paymentInitPayload);
+      console.log("Sending PayTech payment request:", paymentInitPayload);
 
-        if (paymentError || !paymentResult) {
-          const errorMsg =
-            paymentError?.message ||
-            "Erreur lors de l'initialisation du paiement";
-          toast.error(`❌ ${errorMsg}`);
-          setIsProcessing(false);
-          return;
-        }
+      // Create payment via API
+      const response = await fetch(
+        "https://unskeptical-unmournfully-fawn.ngrok-free.app/api/paytech/create-payment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(paymentInitPayload),
+        },
+      );
 
-        // Show success message
-        toast.success("✅ Redirection vers PayDunya...");
+      const paymentResult = await response.json();
+      console.log("PayTech response:", paymentResult);
 
-        // Wait a moment then redirect to PayDunya
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!response.ok || !paymentResult.success) {
+        const errorMsg =
+          paymentResult.message ||
+          paymentResult.error ||
+          "Erreur lors de l'initialisation du paiement PayTech";
+        toast.error(`❌ ${errorMsg}`);
+        setIsProcessing(false);
+        return;
+      }
 
-        const paymentUrl = (paymentResult as any).payment_url;
-        if (paymentUrl) {
-          // Redirect to PayDunya payment page
-          window.location.href = paymentUrl;
-        } else {
-          toast.error("❌ URL de paiement non reçue");
-          setIsProcessing(false);
-        }
+      // Show success message
+      toast.success("✅ Redirection vers PayTech...");
+
+      // Wait a moment then redirect to PayTech
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const redirectUrl = paymentResult.redirect_url;
+      if (redirectUrl) {
+        // Update payment status
+        await payments.update(payment.id, {
+          status: "processing",
+        });
+
+        // Redirect to PayTech payment page
+        window.location.href = redirectUrl;
+      } else {
+        toast.error("❌ URL de paiement non reçue");
+        setIsProcessing(false);
       }
     } catch (error) {
       const message =
