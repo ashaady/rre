@@ -315,10 +315,10 @@ export default function AdminDashboard() {
                           {/* Order Number */}
                           <div className="min-w-0">
                             <p className="font-bold text-foreground">
-                              #{order.orderNumber}
+                              #{order.order_number}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              {new Date(order.createdAt).toLocaleTimeString("fr-FR")}
+                              {new Date(order.created_at).toLocaleTimeString("fr-FR")}
                             </p>
                           </div>
 
@@ -336,9 +336,9 @@ export default function AdminDashboard() {
                           <div>
                             <Badge
                               variant="outline"
-                              className={order.orderType === "livraison" ? "bg-blue-50" : "bg-green-50"}
+                              className={order.order_type === "livraison" ? "bg-blue-50" : "bg-green-50"}
                             >
-                              {order.orderType === "livraison" ? "🚚 Livraison" : "📦 À emporter"}
+                              {order.order_type === "livraison" ? "🚚 Livraison" : "📦 À emporter"}
                             </Badge>
                           </div>
 
