@@ -235,24 +235,6 @@ export default function PaymentPage() {
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Menu Image */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-lg p-6 mb-6"
-        >
-          <h2 className="text-2xl font-bold text-foreground mb-4">
-            Notre Menu
-          </h2>
-          <div className="rounded-lg overflow-hidden shadow-md">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F19945f87741e40b398843fe8ba0a7879%2F6218ca500fe641c38096229d876951bc?format=webp&width=800"
-              alt="Menu Chicken Master"
-              className="w-full h-auto"
-            />
-          </div>
-        </motion.div>
-
         {/* Order Summary */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
