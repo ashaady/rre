@@ -29,7 +29,15 @@ interface OrderItem {
 interface Order {
   id: string;
   order_number: string;
-  status: "pending" | "paid" | "confirmed" | "preparing" | "ready" | "out_for_delivery" | "delivered" | "cancelled";
+  status:
+    | "pending"
+    | "paid"
+    | "confirmed"
+    | "preparing"
+    | "ready"
+    | "out_for_delivery"
+    | "delivered"
+    | "cancelled";
   order_type: "livraison" | "emporter";
   items: OrderItem[];
   total: number;
@@ -39,14 +47,37 @@ interface Order {
   delivery_address?: string;
 }
 
-const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
-  pending: { label: "En attente", color: "bg-gray-100", bgColor: "text-gray-700" },
+const statusConfig: Record<
+  string,
+  { label: string; color: string; bgColor: string }
+> = {
+  pending: {
+    label: "En attente",
+    color: "bg-gray-100",
+    bgColor: "text-gray-700",
+  },
   paid: { label: "Payée", color: "bg-green-100", bgColor: "text-green-700" },
-  confirmed: { label: "Confirmée", color: "bg-blue-100", bgColor: "text-blue-700" },
-  preparing: { label: "En préparation", color: "bg-orange-100", bgColor: "text-orange-700" },
+  confirmed: {
+    label: "Confirmée",
+    color: "bg-blue-100",
+    bgColor: "text-blue-700",
+  },
+  preparing: {
+    label: "En préparation",
+    color: "bg-orange-100",
+    bgColor: "text-orange-700",
+  },
   ready: { label: "Prête", color: "bg-purple-100", bgColor: "text-purple-700" },
-  out_for_delivery: { label: "En livraison", color: "bg-indigo-100", bgColor: "text-indigo-700" },
-  delivered: { label: "Livrée", color: "bg-green-100", bgColor: "text-green-700" },
+  out_for_delivery: {
+    label: "En livraison",
+    color: "bg-indigo-100",
+    bgColor: "text-indigo-700",
+  },
+  delivered: {
+    label: "Livrée",
+    color: "bg-green-100",
+    bgColor: "text-green-700",
+  },
   cancelled: { label: "Annulée", color: "bg-red-100", bgColor: "text-red-700" },
 };
 
@@ -95,12 +126,10 @@ export default function AdminDashboard() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const ordersToday = orders.filter(
-      (o) => new Date(o.created_at) >= today
-    );
+    const ordersToday = orders.filter((o) => new Date(o.created_at) >= today);
 
     const activeOrders = orders.filter(
-      (o) => !["delivered", "cancelled"].includes(o.status)
+      (o) => !["delivered", "cancelled"].includes(o.status),
     );
 
     const paidOrders = ordersToday.filter((o) => o.status === "paid");
@@ -123,13 +152,17 @@ export default function AdminDashboard() {
       case "paid":
         return orders.filter((o) => o.status === "paid");
       case "preparing":
-        return orders.filter((o) => ["confirmed", "preparing"].includes(o.status));
+        return orders.filter((o) =>
+          ["confirmed", "preparing"].includes(o.status),
+        );
       case "ready":
         return orders.filter((o) => o.status === "ready");
       case "delivery":
         return orders.filter((o) => o.status === "out_for_delivery");
       case "completed":
-        return orders.filter((o) => ["delivered", "cancelled"].includes(o.status));
+        return orders.filter((o) =>
+          ["delivered", "cancelled"].includes(o.status),
+        );
       default:
         return orders;
     }
@@ -141,25 +174,37 @@ export default function AdminDashboard() {
       all: orders.length,
       pending: orders.filter((o) => o.status === "pending").length,
       paid: orders.filter((o) => o.status === "paid").length,
-      preparing: orders.filter((o) => ["confirmed", "preparing"].includes(o.status)).length,
+      preparing: orders.filter((o) =>
+        ["confirmed", "preparing"].includes(o.status),
+      ).length,
       ready: orders.filter((o) => o.status === "ready").length,
       delivery: orders.filter((o) => o.status === "out_for_delivery").length,
-      completed: orders.filter((o) => ["delivered", "cancelled"].includes(o.status)).length,
+      completed: orders.filter((o) =>
+        ["delivered", "cancelled"].includes(o.status),
+      ).length,
     };
   }, [orders]);
 
   const handleStatusUpdate = (orderId: string, newStatus: string) => {
     setOrders((prev) =>
       prev.map((o) =>
-        o.id === orderId ? { ...o, status: newStatus as any } : o
-      )
+        o.id === orderId ? { ...o, status: newStatus as any } : o,
+      ),
     );
     setSelectedOrder(null);
     toast.success(`Commande mise à jour - ${statusConfig[newStatus].label}`);
   };
 
   const handleExportCSV = () => {
-    const headers = ["N°", "Client", "Téléphone", "Type", "Total", "Statut", "Heure"];
+    const headers = [
+      "N°",
+      "Client",
+      "Téléphone",
+      "Type",
+      "Total",
+      "Statut",
+      "Heure",
+    ];
     const rows = filteredOrders.map((o) => [
       o.order_number,
       o.customer_name,
@@ -192,10 +237,15 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-black">Dashboard Admin</h1>
               <div className="flex items-center gap-2 ml-4 px-3 py-1 bg-white/10 rounded-full">
                 <div className="w-2 h-2 bg-chicken-green rounded-full animate-pulse" />
-                <span className="text-sm font-semibold">Commandes en direct</span>
+                <span className="text-sm font-semibold">
+                  Commandes en direct
+                </span>
               </div>
             </div>
-            <Button variant="outline" className="text-white border-white hover:bg-white/10">
+            <Button
+              variant="outline"
+              className="text-white border-white hover:bg-white/10"
+            >
               <LogOut className="w-4 h-4 mr-2" />
               Déconnexion
             </Button>
@@ -241,10 +291,14 @@ export default function AdminDashboard() {
               >
                 <Card className="overflow-hidden">
                   <CardContent className="p-6">
-                    <div className={`bg-gradient-to-br ${stat.color} p-3 rounded-lg w-fit mb-3`}>
+                    <div
+                      className={`bg-gradient-to-br ${stat.color} p-3 rounded-lg w-fit mb-3`}
+                    >
                       <div className="text-white">{stat.icon}</div>
                     </div>
-                    <p className="text-sm text-muted-foreground">{stat.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {stat.title}
+                    </p>
                     <p className="text-2xl font-bold text-foreground mt-1">
                       {stat.value}
                     </p>
@@ -318,7 +372,9 @@ export default function AdminDashboard() {
                               #{order.order_number}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              {new Date(order.created_at).toLocaleTimeString("fr-FR")}
+                              {new Date(order.created_at).toLocaleTimeString(
+                                "fr-FR",
+                              )}
                             </p>
                           </div>
 
@@ -336,9 +392,15 @@ export default function AdminDashboard() {
                           <div>
                             <Badge
                               variant="outline"
-                              className={order.order_type === "livraison" ? "bg-blue-50" : "bg-green-50"}
+                              className={
+                                order.order_type === "livraison"
+                                  ? "bg-blue-50"
+                                  : "bg-green-50"
+                              }
                             >
-                              {order.order_type === "livraison" ? "🚚 Livraison" : "📦 À emporter"}
+                              {order.order_type === "livraison"
+                                ? "🚚 Livraison"
+                                : "📦 À emporter"}
                             </Badge>
                           </div>
 
@@ -352,7 +414,9 @@ export default function AdminDashboard() {
                           {/* Status */}
                           <div>
                             <Badge className={statusConfig[order.status].color}>
-                              <span className={statusConfig[order.status].bgColor}>
+                              <span
+                                className={statusConfig[order.status].bgColor}
+                              >
                                 {statusConfig[order.status].label}
                               </span>
                             </Badge>
@@ -360,19 +424,21 @@ export default function AdminDashboard() {
 
                           {/* Quick Actions */}
                           <div className="flex gap-2">
-                            {order.status !== "delivered" && order.status !== "cancelled" && (
-                              <Button
-                                size="sm"
-                                className="bg-primary hover:bg-primary/90"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const next = nextStatusMap[order.status];
-                                  if (next) handleStatusUpdate(order.id, next);
-                                }}
-                              >
-                                <Check className="w-4 h-4" />
-                              </Button>
-                            )}
+                            {order.status !== "delivered" &&
+                              order.status !== "cancelled" && (
+                                <Button
+                                  size="sm"
+                                  className="bg-primary hover:bg-primary/90"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const next = nextStatusMap[order.status];
+                                    if (next)
+                                      handleStatusUpdate(order.id, next);
+                                  }}
+                                >
+                                  <Check className="w-4 h-4" />
+                                </Button>
+                              )}
                           </div>
                         </div>
                       </CardContent>
@@ -381,7 +447,9 @@ export default function AdminDashboard() {
                 ))
               ) : (
                 <div className="text-center py-12">
-                  <p className="text-muted-foreground">Aucune commande dans ce filtre</p>
+                  <p className="text-muted-foreground">
+                    Aucune commande dans ce filtre
+                  </p>
                 </div>
               )}
             </AnimatePresence>
@@ -414,23 +482,35 @@ export default function AdminDashboard() {
               <div className="md:col-span-2 space-y-6">
                 {/* Order Info */}
                 <div>
-                  <h3 className="font-bold text-lg mb-3">Informations commande</h3>
+                  <h3 className="font-bold text-lg mb-3">
+                    Informations commande
+                  </h3>
                   <div className="space-y-2 text-sm">
                     <p>
                       <span className="text-muted-foreground">Statut :</span>{" "}
-                      <Badge className={statusConfig[selectedOrder.status].color}>
-                        <span className={statusConfig[selectedOrder.status].bgColor}>
+                      <Badge
+                        className={statusConfig[selectedOrder.status].color}
+                      >
+                        <span
+                          className={statusConfig[selectedOrder.status].bgColor}
+                        >
                           {statusConfig[selectedOrder.status].label}
                         </span>
                       </Badge>
                     </p>
                     <p>
                       <span className="text-muted-foreground">Type :</span>{" "}
-                      {selectedOrder.order_type === "livraison" ? "🚚 Livraison" : "📦 À emporter"}
+                      {selectedOrder.order_type === "livraison"
+                        ? "🚚 Livraison"
+                        : "📦 À emporter"}
                     </p>
                     <p>
-                      <span className="text-muted-foreground">Date/Heure :</span>{" "}
-                      {new Date(selectedOrder.created_at).toLocaleString("fr-FR")}
+                      <span className="text-muted-foreground">
+                        Date/Heure :
+                      </span>{" "}
+                      {new Date(selectedOrder.created_at).toLocaleString(
+                        "fr-FR",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -503,17 +583,18 @@ export default function AdminDashboard() {
                     WhatsApp
                   </a>
 
-                  {selectedOrder.status !== "delivered" && selectedOrder.status !== "cancelled" && (
-                    <Button
-                      onClick={() => {
-                        const next = nextStatusMap[selectedOrder.status];
-                        if (next) handleStatusUpdate(selectedOrder.id, next);
-                      }}
-                      className="w-full bg-primary text-white hover:bg-primary/90"
-                    >
-                      Étape suivante
-                    </Button>
-                  )}
+                  {selectedOrder.status !== "delivered" &&
+                    selectedOrder.status !== "cancelled" && (
+                      <Button
+                        onClick={() => {
+                          const next = nextStatusMap[selectedOrder.status];
+                          if (next) handleStatusUpdate(selectedOrder.id, next);
+                        }}
+                        className="w-full bg-primary text-white hover:bg-primary/90"
+                      >
+                        Étape suivante
+                      </Button>
+                    )}
                 </div>
               </div>
             </div>

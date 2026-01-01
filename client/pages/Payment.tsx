@@ -45,7 +45,9 @@ export default function PaymentPage() {
   const [payment, setPayment] = useState<Payment | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"wave" | "orange-money">("wave");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    "wave" | "orange-money"
+  >("wave");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -137,7 +139,9 @@ export default function PaymentPage() {
       console.log("Order updated:", orderUpdate);
 
       // Save order to localStorage for admin dashboard
-      const adminOrders = JSON.parse(localStorage.getItem("adminOrders") || "[]");
+      const adminOrders = JSON.parse(
+        localStorage.getItem("adminOrders") || "[]",
+      );
       const updatedOrder = {
         id: order.id,
         order_number: order.order_number,
@@ -434,7 +438,8 @@ export default function PaymentPage() {
               🛡️ Paiement 100% sécurisé
             </p>
             <p className="text-sm text-green-700 mt-1">
-              Vos données sont protégées et cryptées. Cliquez sur le bouton ci-dessous pour valider votre commande.
+              Vos données sont protégées et cryptées. Cliquez sur le bouton
+              ci-dessous pour valider votre commande.
             </p>
           </div>
         </motion.div>
