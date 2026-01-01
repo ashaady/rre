@@ -120,6 +120,8 @@ export default function AdminDashboard() {
     switch (selectedFilter) {
       case "pending":
         return orders.filter((o) => o.status === "pending");
+      case "paid":
+        return orders.filter((o) => o.status === "paid");
       case "preparing":
         return orders.filter((o) => ["confirmed", "preparing"].includes(o.status));
       case "ready":
