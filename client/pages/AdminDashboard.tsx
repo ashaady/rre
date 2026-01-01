@@ -262,10 +262,11 @@ export default function AdminDashboard() {
           {/* Filters */}
           <div className="mb-6 flex items-center justify-between">
             <Tabs value={selectedFilter} onValueChange={setSelectedFilter}>
-              <TabsList className="grid grid-cols-3 md:grid-cols-6">
+              <TabsList className="grid grid-cols-3 md:grid-cols-7">
                 {[
                   { id: "all", label: "Toutes" },
                   { id: "pending", label: "Nouvelles" },
+                  { id: "paid", label: "Payées" },
                   { id: "preparing", label: "Préparation" },
                   { id: "ready", label: "Prêtes" },
                   { id: "delivery", label: "Livraison" },
