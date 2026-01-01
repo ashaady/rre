@@ -82,15 +82,21 @@ export default function PaymentSuccess() {
           {/* Info Messages */}
           <div className="space-y-3 mb-8 text-sm">
             <div className="text-muted-foreground">
-              <p className="font-semibold text-foreground mb-1">✓ Paiement effectué</p>
+              <p className="font-semibold text-foreground mb-1">
+                ✓ Paiement effectué
+              </p>
               <p>Votre transaction a été traitée avec succès par PayTech</p>
             </div>
             <div className="text-muted-foreground">
-              <p className="font-semibold text-foreground mb-1">✓ Commande confirmée</p>
+              <p className="font-semibold text-foreground mb-1">
+                ✓ Commande confirmée
+              </p>
               <p>Nous commençons à préparer votre commande</p>
             </div>
             <div className="text-muted-foreground">
-              <p className="font-semibold text-foreground mb-1">✓ Suivi disponible</p>
+              <p className="font-semibold text-foreground mb-1">
+                ✓ Suivi disponible
+              </p>
               <p>Vous pouvez suivre votre commande dans l'onglet "Commandes"</p>
             </div>
           </div>

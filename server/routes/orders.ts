@@ -57,13 +57,7 @@ export async function handleCreateOrder(req: Request, res: Response) {
     } = req.body;
 
     // Validate required fields
-    if (
-      !order_number ||
-      !customer_name ||
-      !items ||
-      !total ||
-      !order_type
-    ) {
+    if (!order_number || !customer_name || !items || !total || !order_type) {
       return res.status(400).json({
         success: false,
         error: "Missing required fields",

@@ -68,7 +68,8 @@ export default function CartDrawer({
       };
 
       // Create order via API
-      const { data: orderData, error: orderError } = await orders.create(orderPayload);
+      const { data: orderData, error: orderError } =
+        await orders.create(orderPayload);
 
       if (orderError || !orderData) {
         toast.error("Erreur lors de la création de la commande");
@@ -86,10 +87,13 @@ export default function CartDrawer({
         status: "pending",
       };
 
-      const { data: paymentData, error: paymentError } = await payments.create(paymentPayload);
+      const { data: paymentData, error: paymentError } =
+        await payments.create(paymentPayload);
 
       if (paymentError || !paymentData) {
-        toast.error("Erreur lors de la création de l'enregistrement de paiement");
+        toast.error(
+          "Erreur lors de la création de l'enregistrement de paiement",
+        );
         setIsProcessing(false);
         return;
       }

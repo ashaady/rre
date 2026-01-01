@@ -63,7 +63,11 @@ export default function PaymentPage() {
         // Load order
         const { data: orderData, error: orderError } =
           await orders.get(orderId);
-        console.log("Payment page - Order fetch response:", { orderData, orderError, orderId });
+        console.log("Payment page - Order fetch response:", {
+          orderData,
+          orderError,
+          orderId,
+        });
         if (orderError || !orderData) {
           toast.error("Commande non trouvée");
           navigate("/");
@@ -74,7 +78,11 @@ export default function PaymentPage() {
         // Load payment
         const { data: paymentData, error: paymentError } =
           await payments.get(paymentId);
-        console.log("Payment page - Payment fetch response:", { paymentData, paymentError, paymentId });
+        console.log("Payment page - Payment fetch response:", {
+          paymentData,
+          paymentError,
+          paymentId,
+        });
         if (paymentError || !paymentData) {
           toast.error("Enregistrement de paiement non trouvé");
           navigate("/");
@@ -114,7 +122,9 @@ export default function PaymentPage() {
         item_price: order.total,
         command_name: `Commande de nourriture - ${order.items.map((i) => i.product_name).join(", ")}`,
         target_payment: "Orange Money",
-        phone_number: phoneNumber.startsWith("+") ? phoneNumber : `+221${phoneNumber}`,
+        phone_number: phoneNumber.startsWith("+")
+          ? phoneNumber
+          : `+221${phoneNumber}`,
         full_name: fullName,
         custom_field: {
           order_id: order.id,
@@ -338,7 +348,10 @@ export default function PaymentPage() {
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="fullName" className="block text-sm font-semibold mb-2 text-foreground">
+              <Label
+                htmlFor="fullName"
+                className="block text-sm font-semibold mb-2 text-foreground"
+              >
                 Nom complet
               </Label>
               <Input
@@ -352,7 +365,10 @@ export default function PaymentPage() {
             </div>
 
             <div>
-              <Label htmlFor="phoneNumber" className="block text-sm font-semibold mb-2 text-foreground">
+              <Label
+                htmlFor="phoneNumber"
+                className="block text-sm font-semibold mb-2 text-foreground"
+              >
                 Numéro de téléphone
               </Label>
               <Input
@@ -364,7 +380,8 @@ export default function PaymentPage() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                ℹ️ Incluez l'indicatif pays (+221 pour le Sénégal) ou nous l'ajouterons automatiquement
+                ℹ️ Incluez l'indicatif pays (+221 pour le Sénégal) ou nous
+                l'ajouterons automatiquement
               </p>
             </div>
           </div>
@@ -384,10 +401,12 @@ export default function PaymentPage() {
                 Paiement Orange Money via PayTech
               </h3>
               <p className="text-sm text-muted-foreground mb-3">
-                Vous serez redirigé vers PayTech pour finaliser votre paiement avec Orange Money. Le paiement est 100% sécurisé.
+                Vous serez redirigé vers PayTech pour finaliser votre paiement
+                avec Orange Money. Le paiement est 100% sécurisé.
               </p>
               <div className="text-xs text-orange-700 bg-orange-100 rounded-lg p-3">
-                💡 Astuce: Assurez-vous d'avoir suffisamment de crédit Orange Money sur votre téléphone
+                💡 Astuce: Assurez-vous d'avoir suffisamment de crédit Orange
+                Money sur votre téléphone
               </div>
             </div>
           </div>
@@ -406,7 +425,8 @@ export default function PaymentPage() {
               🛡️ Paiement 100% sécurisé
             </p>
             <p className="text-sm text-green-700 mt-1">
-              Vos données sont protégées et cryptées. Vous serez redirigé vers PayTech pour compléter votre paiement.
+              Vos données sont protégées et cryptées. Vous serez redirigé vers
+              PayTech pour compléter votre paiement.
             </p>
           </div>
         </motion.div>
@@ -419,11 +439,7 @@ export default function PaymentPage() {
         >
           <Button
             onClick={handlePayment}
-            disabled={
-              isProcessing ||
-              !phoneNumber.trim() ||
-              !fullName.trim()
-            }
+            disabled={isProcessing || !phoneNumber.trim() || !fullName.trim()}
             className="w-full h-16 bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-lg flex items-center justify-center gap-2 rounded-xl transition-all"
           >
             {isProcessing ? (

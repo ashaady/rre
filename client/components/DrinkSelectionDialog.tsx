@@ -1,4 +1,11 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -43,8 +50,12 @@ export default function DrinkSelectionDialog({
               <Droplet className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <DialogTitle className="text-xl">Choisissez votre boisson</DialogTitle>
-              <p className="text-sm text-muted-foreground mt-1">Pour: {menuName}</p>
+              <DialogTitle className="text-xl">
+                Choisissez votre boisson
+              </DialogTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                Pour: {menuName}
+              </p>
             </div>
           </div>
           <DialogDescription>
@@ -61,14 +72,26 @@ export default function DrinkSelectionDialog({
                     htmlFor={drink.id}
                     className="flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50"
                     style={{
-                      borderColor: selectedDrink === drink.id ? "hsl(var(--primary))" : "hsl(var(--border))",
-                      backgroundColor: selectedDrink === drink.id ? "hsl(var(--primary) / 0.05)" : "transparent",
+                      borderColor:
+                        selectedDrink === drink.id
+                          ? "hsl(var(--primary))"
+                          : "hsl(var(--border))",
+                      backgroundColor:
+                        selectedDrink === drink.id
+                          ? "hsl(var(--primary) / 0.05)"
+                          : "transparent",
                     }}
                   >
-                    <RadioGroupItem value={drink.id} id={drink.id} className="flex-shrink-0" />
+                    <RadioGroupItem
+                      value={drink.id}
+                      id={drink.id}
+                      className="flex-shrink-0"
+                    />
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <span className="text-2xl">{drink.emoji}</span>
-                      <span className="font-medium text-foreground">{drink.name}</span>
+                      <span className="font-medium text-foreground">
+                        {drink.name}
+                      </span>
                     </div>
                   </Label>
                 </div>

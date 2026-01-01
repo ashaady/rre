@@ -73,17 +73,22 @@ export default function PaymentCancel() {
           >
             <div className="text-left space-y-2 text-sm text-muted-foreground">
               <p>
-                <span className="font-semibold text-foreground">Que s'est-il passé?</span>
+                <span className="font-semibold text-foreground">
+                  Que s'est-il passé?
+                </span>
               </p>
               <p>
-                Vous avez annulé le paiement sur la plateforme PayTech. Vous pouvez à tout moment reprendre votre commande.
+                Vous avez annulé le paiement sur la plateforme PayTech. Vous
+                pouvez à tout moment reprendre votre commande.
               </p>
             </div>
           </motion.div>
 
           {/* Why might this happen */}
           <div className="text-left bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-200">
-            <p className="font-semibold text-foreground text-sm mb-3">Autres raisons possibles:</p>
+            <p className="font-semibold text-foreground text-sm mb-3">
+              Autres raisons possibles:
+            </p>
             <ul className="text-xs text-muted-foreground space-y-2">
               <li>✓ Solde insuffisant sur votre Orange Money</li>
               <li>✓ Erreur de numéro de téléphone</li>
@@ -140,7 +145,8 @@ export default function PaymentCancel() {
           className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl text-center"
         >
           <p className="text-xs text-blue-900">
-            <span className="font-semibold">Besoin d'aide?</span> Contactez-nous si le problème persiste.
+            <span className="font-semibold">Besoin d'aide?</span> Contactez-nous
+            si le problème persiste.
           </p>
         </motion.div>
       </motion.div>

@@ -1,4 +1,11 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -20,7 +27,9 @@ export default function PaymentMethodSelector({
   onSelect,
   onCancel,
 }: PaymentMethodSelectorProps) {
-  const [selectedMethod, setSelectedMethod] = useState<"wave" | "orange-money" | "">("");
+  const [selectedMethod, setSelectedMethod] = useState<
+    "wave" | "orange-money" | ""
+  >("");
 
   const handleConfirm = () => {
     if (selectedMethod === "wave" || selectedMethod === "orange-money") {
@@ -49,12 +58,16 @@ export default function PaymentMethodSelector({
             </div>
           </div>
           <DialogDescription>
-            Sélectionnez votre méthode de paiement préférée pour finaliser votre commande
+            Sélectionnez votre méthode de paiement préférée pour finaliser votre
+            commande
           </DialogDescription>
         </DialogHeader>
 
         <div className="py-4">
-          <RadioGroup value={selectedMethod} onValueChange={(v) => setSelectedMethod(v as any)}>
+          <RadioGroup
+            value={selectedMethod}
+            onValueChange={(v) => setSelectedMethod(v as any)}
+          >
             <div className="space-y-3 mb-6">
               {/* Wave */}
               <div>
@@ -62,11 +75,21 @@ export default function PaymentMethodSelector({
                   htmlFor="wave"
                   className="flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50"
                   style={{
-                    borderColor: selectedMethod === "wave" ? "hsl(var(--primary))" : "hsl(var(--border))",
-                    backgroundColor: selectedMethod === "wave" ? "hsl(var(--primary) / 0.05)" : "transparent",
+                    borderColor:
+                      selectedMethod === "wave"
+                        ? "hsl(var(--primary))"
+                        : "hsl(var(--border))",
+                    backgroundColor:
+                      selectedMethod === "wave"
+                        ? "hsl(var(--primary) / 0.05)"
+                        : "transparent",
                   }}
                 >
-                  <RadioGroupItem value="wave" id="wave" className="flex-shrink-0" />
+                  <RadioGroupItem
+                    value="wave"
+                    id="wave"
+                    className="flex-shrink-0"
+                  />
                   <div className="flex items-center gap-3 flex-1">
                     <div className="w-12 h-8 bg-blue-500 rounded flex items-center justify-center text-white font-bold text-xs">
                       Wave
@@ -82,16 +105,28 @@ export default function PaymentMethodSelector({
                   htmlFor="orange-money"
                   className="flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50"
                   style={{
-                    borderColor: selectedMethod === "orange-money" ? "hsl(var(--primary))" : "hsl(var(--border))",
-                    backgroundColor: selectedMethod === "orange-money" ? "hsl(var(--primary) / 0.05)" : "transparent",
+                    borderColor:
+                      selectedMethod === "orange-money"
+                        ? "hsl(var(--primary))"
+                        : "hsl(var(--border))",
+                    backgroundColor:
+                      selectedMethod === "orange-money"
+                        ? "hsl(var(--primary) / 0.05)"
+                        : "transparent",
                   }}
                 >
-                  <RadioGroupItem value="orange-money" id="orange-money" className="flex-shrink-0" />
+                  <RadioGroupItem
+                    value="orange-money"
+                    id="orange-money"
+                    className="flex-shrink-0"
+                  />
                   <div className="flex items-center gap-3 flex-1">
                     <div className="w-12 h-8 bg-orange-500 rounded flex items-center justify-center text-white font-bold text-xs">
                       Orange
                     </div>
-                    <span className="font-medium text-foreground">Orange Money</span>
+                    <span className="font-medium text-foreground">
+                      Orange Money
+                    </span>
                   </div>
                 </Label>
               </div>
@@ -103,7 +138,9 @@ export default function PaymentMethodSelector({
             <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-blue-900">
               <p className="font-semibold mb-1">🔒 Paiement sécurisé</p>
-              <p className="text-xs">Vous serez redirigé vers la page de paiement sécurisée</p>
+              <p className="text-xs">
+                Vous serez redirigé vers la page de paiement sécurisée
+              </p>
             </div>
           </div>
         </div>
