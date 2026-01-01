@@ -45,6 +45,7 @@ export default function PaymentPage() {
   const [payment, setPayment] = useState<Payment | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"wave" | "orange-money">("wave");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
