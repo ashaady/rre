@@ -40,6 +40,7 @@ export default function CartDrawer({
   onCheckout,
 }: CartDrawerProps) {
   const navigate = useNavigate();
+  const [isProcessing, setIsProcessing] = useState(false);
   const total = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
