@@ -397,39 +397,19 @@ export default function PaymentPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.12 }}
           className="bg-green-50 border border-green-200 rounded-3xl p-4 mb-6 flex items-start gap-3"
         >
           <Shield className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold text-green-900">
-              🛡️ Paiement 100% sécurisé par PayDunya
+              🛡️ Paiement 100% sécurisé
             </p>
             <p className="text-sm text-green-700 mt-1">
-              Vos données bancaires sont protégées et cryptées
+              Vos données sont protégées et cryptées. Vous serez redirigé vers PayTech pour compléter votre paiement.
             </p>
           </div>
         </motion.div>
-
-        {/* Security Notice for PayTech */}
-        {paymentGateway === "paytech" && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="bg-blue-50 border border-blue-200 rounded-3xl p-4 mb-6 flex items-start gap-3"
-          >
-            <Shield className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-blue-900">
-                🔒 Paiement sécurisé par PayTech
-              </p>
-              <p className="text-sm text-blue-700 mt-1">
-                Vous serez redirigé vers la plateforme PayTech pour finaliser votre paiement Orange Money
-              </p>
-            </div>
-          </motion.div>
-        )}
 
         {/* Payment Button */}
         <motion.div
