@@ -399,7 +399,7 @@ export default function AdminDashboard() {
           >
             <div className="sticky top-0 bg-white border-b border-border p-6 flex items-center justify-between">
               <h2 className="text-2xl font-bold">
-                Commande #{selectedOrder.orderNumber}
+                Commande #{selectedOrder.order_number}
               </h2>
               <button
                 onClick={() => setSelectedOrder(null)}
