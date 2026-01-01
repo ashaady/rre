@@ -136,6 +136,31 @@ export default function PaymentPage() {
 
       console.log("Order updated:", orderUpdate);
 
+      // Save order to localStorage for admin dashboard
+      const adminOrders = JSON.parse(localStorage.getItem("adminOrders") || "[]");
+      const updatedOrder = {
+        id: order.id,
+        order_number: order.order_number,
+        status: "paid",
+        order_type: order.order_type,
+        items: order.items,
+        total: order.total,
+        created_at: order.created_at || new Date().toISOString(),
+        customer_name: fullName,
+        customer_phone: phoneNumber,
+        delivery_address: order.delivery_address,
+      };
+
+      // Check if order exists, if not add it
+      const orderIndex = adminOrders.findIndex((o: any) => o.id === order.id);
+      if (orderIndex !== -1) {
+        adminOrders[orderIndex] = updatedOrder;
+      } else {
+        adminOrders.push(updatedOrder);
+      }
+
+      localStorage.setItem("adminOrders", JSON.stringify(adminOrders));
+
       // Show success message
       toast.success("✅ Paiement enregistré! Votre commande est validée");
 
