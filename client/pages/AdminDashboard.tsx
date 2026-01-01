@@ -60,9 +60,35 @@ const nextStatusMap: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+
+  // Fetch orders from API
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        // In a real app, you'd have an endpoint that returns all orders
+        // For now, we'll load from localStorage where orders are stored
+        const storedOrders = localStorage.getItem("adminOrders");
+        if (storedOrders) {
+          const parsedOrders = JSON.parse(storedOrders);
+          setOrders(parsedOrders);
+        }
+      } catch (error) {
+        console.error("Failed to load orders:", error);
+      } finally {
+        setIsLoadingOrders(false);
+      }
+    };
+
+    loadOrders();
+
+    // Poll for new orders every 3 seconds
+    const interval = setInterval(loadOrders, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Calculate stats
   const stats = useMemo(() => {
