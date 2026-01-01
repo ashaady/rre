@@ -89,7 +89,6 @@ export default function PaymentPage() {
           return;
         }
         setPayment(paymentData as any);
-        setSelectedMethod((paymentData as any).payment_method || "wave");
       } catch (error) {
         console.error("Error loading data:", error);
         toast.error("Erreur lors du chargement des données");
