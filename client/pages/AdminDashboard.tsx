@@ -28,12 +28,12 @@ interface OrderItem {
 
 interface Order {
   id: string;
-  orderNumber: string;
-  status: "pending" | "confirmed" | "preparing" | "ready" | "out_for_delivery" | "delivered" | "cancelled";
-  orderType: "livraison" | "emporter";
+  order_number: string;
+  status: "pending" | "paid" | "confirmed" | "preparing" | "ready" | "out_for_delivery" | "delivered" | "cancelled";
+  order_type: "livraison" | "emporter";
   items: OrderItem[];
   total: number;
-  createdAt: string;
+  created_at: string;
   customer_name: string;
   customer_phone: string;
   delivery_address?: string;
