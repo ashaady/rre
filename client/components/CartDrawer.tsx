@@ -82,7 +82,7 @@ export default function CartDrawer({
       const paymentPayload = {
         order_id: orderId,
         amount: total,
-        payment_method: "wave" as const,
+        payment_method: "orange-money" as const,
         status: "pending",
       };
 
