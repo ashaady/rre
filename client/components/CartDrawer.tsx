@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -5,9 +6,11 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Trash2, Plus, Minus } from "lucide-react";
+import { Trash2, Plus, Minus, Loader } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { orders, payments } from "@/lib/api";
 
 interface CartItem {
   id: string;
@@ -37,37 +40,75 @@ export default function CartDrawer({
   onCheckout,
 }: CartDrawerProps) {
   const navigate = useNavigate();
+  const [isProcessing, setIsProcessing] = useState(false);
   const total = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const handleCheckout = () => {
-    // Generate order ID
-    const orderId = `order-${Date.now()}`;
+  const handleCheckout = async () => {
+    setIsProcessing(true);
 
-    // Store order in localStorage
-    const order = {
-      id: orderId,
-      orderNumber: `CM${Math.random().toString().slice(2, 10)}`,
-      customer_name: "Client",
-      customer_phone: "",
-      items: items.map((item) => ({
-        product_name: item.product_name,
-        quantity: item.quantity,
-        price: item.price,
-      })),
-      total,
-      order_type: "livraison" as const,
-      status: "pending",
-    };
+    try {
+      // Prepare order payload
+      const orderPayload = {
+        order_number: `CM${Math.random().toString().slice(2, 10)}`,
+        customer_name: "Client",
+        customer_phone: "",
+        items: items.map((item) => ({
+          product_name: item.product_name,
+          quantity: item.quantity,
+          price: item.price,
+          selected_drink: item.selected_drink,
+        })),
+        total,
+        order_type: "livraison" as const,
+        status: "pending",
+      };
 
-    localStorage.setItem(`order-${orderId}`, JSON.stringify(order));
+      // Create order via API
+      const { data: orderData, error: orderError } =
+        await orders.create(orderPayload);
 
-    // Navigate to payment page
-    navigate(`/payment?order_id=${orderId}`);
-    onOpenChange(false);
+      if (orderError || !orderData) {
+        toast.error("Erreur lors de la création de la commande");
+        setIsProcessing(false);
+        return;
+      }
+
+      const orderId = (orderData as any).id;
+
+      // Create payment record via API
+      const paymentPayload = {
+        order_id: orderId,
+        amount: total,
+        payment_method: "orange-money" as const,
+        status: "pending",
+      };
+
+      const { data: paymentData, error: paymentError } =
+        await payments.create(paymentPayload);
+
+      if (paymentError || !paymentData) {
+        toast.error(
+          "Erreur lors de la création de l'enregistrement de paiement",
+        );
+        setIsProcessing(false);
+        return;
+      }
+
+      const paymentId = (paymentData as any).id;
+
+      // Navigate to payment page with both order_id and payment_id
+      navigate(`/payment?order_id=${orderId}&payment_id=${paymentId}`);
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Une erreur est survenue lors du paiement");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -191,9 +232,17 @@ export default function CartDrawer({
 
                 <Button
                   onClick={handleCheckout}
-                  className="w-full bg-primary text-white hover:bg-primary/90 h-12 font-semibold text-base"
+                  disabled={isProcessing || items.length === 0}
+                  className="w-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed h-12 font-semibold text-base flex items-center justify-center gap-2"
                 >
-                  Valider la commande
+                  {isProcessing ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      Traitement...
+                    </>
+                  ) : (
+                    "Valider la commande"
+                  )}
                 </Button>
               </div>
             </div>

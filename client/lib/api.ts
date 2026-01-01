@@ -41,7 +41,10 @@ class ApiClient {
 
       if (!response.ok) {
         const error = await response.text();
-        console.error(`[API ERROR] ${endpoint} - Status ${response.status}:`, error);
+        console.error(
+          `[API ERROR] ${endpoint} - Status ${response.status}:`,
+          error,
+        );
         return {
           error: {
             message: error || `HTTP ${response.status}`,
@@ -110,7 +113,9 @@ export const apiClient = new ApiClient();
 class PayTechClient {
   private baseUrl: string;
 
-  constructor(baseUrl: string = "https://unskeptical-unmournfully-fawn.ngrok-free.app/api") {
+  constructor(
+    baseUrl: string = "https://unskeptical-unmournfully-fawn.ngrok-free.app/api",
+  ) {
     this.baseUrl = baseUrl;
   }
 
@@ -165,16 +170,10 @@ class PayTechClient {
 
 export const payTechClient = new PayTechClient();
 
-// PayDunya API endpoints
-export const paydunya = {
-  initialize: (payload: any) => apiClient.post("/paydunya/initialize", payload),
-  verify: (token: string) => apiClient.get(`/paydunya/verify/${token}`),
-  callback: (payload: any) => apiClient.post("/paydunya/callback", payload),
-};
-
 // PayTech API endpoints
 export const paytech = {
-  createPayment: (payload: any) => payTechClient.post("/paytech/create-payment", payload),
+  createPayment: (payload: any) =>
+    payTechClient.post("/paytech/create-payment", payload),
 };
 
 // Orders API endpoints
