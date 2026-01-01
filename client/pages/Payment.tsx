@@ -369,27 +369,64 @@ export default function PaymentPage() {
           </div>
         </motion.div>
 
-        {/* Payment Method Info */}
+        {/* Payment Methods Selection */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="bg-orange-50 border border-orange-200 rounded-2xl p-6 mb-6"
+          className="bg-white rounded-2xl shadow-lg p-6 mb-6"
         >
-          <div className="flex items-start gap-4">
-            <div className="text-3xl">🏦</div>
-            <div>
-              <h3 className="font-bold text-lg text-foreground mb-2">
-                Paiement Orange Money via PayTech
-              </h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Vous serez redirigé vers PayTech pour finaliser votre paiement
-                avec Orange Money. Le paiement est 100% sécurisé.
-              </p>
-              <div className="text-xs text-orange-700 bg-orange-100 rounded-lg p-3">
-                💡 Astuce: Assurez-vous d'avoir suffisamment de crédit Orange
-                Money sur votre téléphone
+          <h2 className="text-lg font-bold text-foreground mb-4">
+            Choisir un moyen de paiement
+          </h2>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Wave Payment Method */}
+            <div
+              onClick={() => setSelectedPaymentMethod("wave")}
+              className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                selectedPaymentMethod === "wave"
+                  ? "border-blue-600 bg-blue-50"
+                  : "border-gray-200 bg-gray-50 hover:border-blue-300"
+              }`}
+            >
+              <div className="flex items-center justify-center mb-3">
+                <img
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 80'%3E%3Crect fill='%23007AFF' width='200' height='80' rx='10'/%3E%3Ctext x='50%' y='50%' font-family='Arial,sans-serif' font-size='28' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'%3EWAVE%3C/text%3E%3C/svg%3E"
+                  alt="Wave"
+                  className="h-12"
+                />
               </div>
+              <p className="text-sm font-semibold text-center text-foreground">
+                Wave
+              </p>
+              <p className="text-xs text-muted-foreground text-center mt-1">
+                Paiement mobile
+              </p>
+            </div>
+
+            {/* Orange Money Payment Method */}
+            <div
+              onClick={() => setSelectedPaymentMethod("orange-money")}
+              className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                selectedPaymentMethod === "orange-money"
+                  ? "border-orange-600 bg-orange-50"
+                  : "border-gray-200 bg-gray-50 hover:border-orange-300"
+              }`}
+            >
+              <div className="flex items-center justify-center mb-3">
+                <img
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 80'%3E%3Crect fill='%23FF6600' width='200' height='80' rx='10'/%3E%3Ctext x='50%' y='50%' font-family='Arial,sans-serif' font-size='20' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'%3EORANGE%3C/text%3E%3C/svg%3E"
+                  alt="Orange Money"
+                  className="h-12"
+                />
+              </div>
+              <p className="text-sm font-semibold text-center text-foreground">
+                Orange Money
+              </p>
+              <p className="text-xs text-muted-foreground text-center mt-1">
+                Portefeuille Orange
+              </p>
             </div>
           </div>
         </motion.div>
