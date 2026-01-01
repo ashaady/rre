@@ -138,6 +138,7 @@ export default function AdminDashboard() {
     return {
       all: orders.length,
       pending: orders.filter((o) => o.status === "pending").length,
+      paid: orders.filter((o) => o.status === "paid").length,
       preparing: orders.filter((o) => ["confirmed", "preparing"].includes(o.status)).length,
       ready: orders.filter((o) => o.status === "ready").length,
       delivery: orders.filter((o) => o.status === "out_for_delivery").length,
