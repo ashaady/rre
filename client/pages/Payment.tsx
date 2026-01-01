@@ -396,20 +396,20 @@ export default function PaymentPage() {
           </div>
         </motion.div>
 
-        {/* Payment Not Active Notice */}
+        {/* Security Notice */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="bg-yellow-50 border border-yellow-200 rounded-3xl p-4 mb-6 flex items-start gap-3"
+          className="bg-green-50 border border-green-200 rounded-3xl p-4 mb-6 flex items-start gap-3"
         >
-          <div className="text-2xl flex-shrink-0">⚠️</div>
+          <Shield className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-yellow-900">
-              Paiements actuellement indisponibles
+            <p className="font-semibold text-green-900">
+              🛡️ Paiement 100% sécurisé
             </p>
-            <p className="text-sm text-yellow-700 mt-1">
-              Les paiements ne sont pas actifs pour l'instant. Veuillez contacter le support pour plus d'informations.
+            <p className="text-sm text-green-700 mt-1">
+              Vos données sont protégées et cryptées. Cliquez sur le bouton ci-dessous pour valider votre commande.
             </p>
           </div>
         </motion.div>
@@ -422,11 +422,20 @@ export default function PaymentPage() {
         >
           <Button
             onClick={handlePayment}
-            disabled={true}
-            className="w-full h-16 bg-gray-400 hover:bg-gray-400 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-lg flex items-center justify-center gap-2 rounded-xl transition-all"
+            disabled={isProcessing || !phoneNumber.trim() || !fullName.trim()}
+            className="w-full h-16 bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-lg flex items-center justify-center gap-2 rounded-xl transition-all"
           >
-            <Lock className="w-5 h-5" />
-            Paiement indisponible
+            {isProcessing ? (
+              <>
+                <Loader className="w-5 h-5 animate-spin" />
+                Enregistrement du paiement...
+              </>
+            ) : (
+              <>
+                <Lock className="w-5 h-5" />
+                Valider le paiement - {order.total.toLocaleString()} F
+              </>
+            )}
           </Button>
         </motion.div>
       </div>
