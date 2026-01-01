@@ -48,6 +48,9 @@ export default function PaymentMethodSelector({
               </p>
             </div>
           </div>
+          <DialogDescription>
+            Sélectionnez votre méthode de paiement préférée pour finaliser votre commande
+          </DialogDescription>
         </DialogHeader>
 
         <div className="py-4">
