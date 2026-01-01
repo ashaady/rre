@@ -228,9 +228,17 @@ export default function CartDrawer({
 
                 <Button
                   onClick={handleCheckout}
-                  className="w-full bg-primary text-white hover:bg-primary/90 h-12 font-semibold text-base"
+                  disabled={isProcessing || items.length === 0}
+                  className="w-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed h-12 font-semibold text-base flex items-center justify-center gap-2"
                 >
-                  Valider la commande
+                  {isProcessing ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      Traitement...
+                    </>
+                  ) : (
+                    "Valider la commande"
+                  )}
                 </Button>
               </div>
             </div>
