@@ -325,7 +325,7 @@ export default function PaymentPage() {
           </div>
         </motion.div>
 
-        {/* Payment Gateway Selection */}
+        {/* Payment Information Form */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -333,183 +333,64 @@ export default function PaymentPage() {
           className="bg-white rounded-2xl shadow-lg p-6 mb-6"
         >
           <h2 className="text-lg font-bold text-foreground mb-4">
-            Choisissez votre plateforme de paiement
+            Vos informations de contact
           </h2>
 
-          <RadioGroup
-            value={paymentGateway}
-            onValueChange={(v) => setPaymentGateway(v as any)}
-          >
-            <div className="space-y-4">
-              {/* PayDunya */}
-              <Label
-                htmlFor="paydunya"
-                className="flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all hover:border-primary"
-                style={{
-                  borderColor:
-                    paymentGateway === "paydunya" ? "#DC2626" : "#E5E7EB",
-                  backgroundColor:
-                    paymentGateway === "paydunya" ? "#FEE2E2" : "transparent",
-                }}
-              >
-                <div className="w-16 h-12 bg-white rounded-lg border border-red-200 flex items-center justify-center mr-4 flex-shrink-0 text-xl">
-                  💳
-                </div>
-                <div className="flex-1">
-                  <p className="font-bold text-lg text-foreground">PayDunya</p>
-                  <p className="text-sm text-muted-foreground">
-                    Paiement sécurisé par PayDunya
-                  </p>
-                </div>
-                <RadioGroupItem value="paydunya" id="paydunya" className="ml-4" />
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="fullName" className="block text-sm font-semibold mb-2 text-foreground">
+                Nom complet
               </Label>
-
-              {/* PayTech */}
-              <Label
-                htmlFor="paytech"
-                className="flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all hover:border-green-600"
-                style={{
-                  borderColor:
-                    paymentGateway === "paytech" ? "#16A34A" : "#E5E7EB",
-                  backgroundColor:
-                    paymentGateway === "paytech" ? "#F0FDF4" : "transparent",
-                }}
-              >
-                <div className="w-16 h-12 bg-white rounded-lg border border-green-200 flex items-center justify-center mr-4 flex-shrink-0 text-xl">
-                  🏦
-                </div>
-                <div className="flex-1">
-                  <p className="font-bold text-lg text-foreground">PayTech</p>
-                  <p className="text-sm text-muted-foreground">
-                    Paiement Orange Money via PayTech
-                  </p>
-                </div>
-                <RadioGroupItem value="paytech" id="paytech" className="ml-4" />
-              </Label>
+              <Input
+                id="fullName"
+                type="text"
+                placeholder="Ex: Moustapha Fall"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600"
+              />
             </div>
-          </RadioGroup>
+
+            <div>
+              <Label htmlFor="phoneNumber" className="block text-sm font-semibold mb-2 text-foreground">
+                Numéro de téléphone
+              </Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                placeholder="Ex: +221768887766 ou 768887766"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                ℹ️ Incluez l'indicatif pays (+221 pour le Sénégal) ou nous l'ajouterons automatiquement
+              </p>
+            </div>
+          </div>
         </motion.div>
 
-        {/* PayTech Personal Info - Only show for PayTech */}
-        {paymentGateway === "paytech" && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 }}
-            className="bg-white rounded-2xl shadow-lg p-6 mb-6"
-          >
-            <h2 className="text-lg font-bold text-foreground mb-4">
-              Vos informations de contact
-            </h2>
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="fullName" className="block text-sm font-semibold mb-2 text-foreground">
-                  Nom complet
-                </Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="Ex: Moustapha Fall"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="phoneNumber" className="block text-sm font-semibold mb-2 text-foreground">
-                  Numéro de téléphone
-                </Label>
-                <Input
-                  id="phoneNumber"
-                  type="tel"
-                  placeholder="Ex: +221768887766 ou 768887766"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-green-600"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  ℹ️ Incluez l'indicatif pays (+221 pour le Sénégal) ou nous l'ajouterons automatiquement
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Payment Method Selection */}
+        {/* Payment Method Info */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl shadow-lg p-6 mb-6"
+          transition={{ delay: 0.08 }}
+          className="bg-orange-50 border border-orange-200 rounded-2xl p-6 mb-6"
         >
-          <h2 className="text-lg font-bold text-foreground mb-4">
-            {paymentGateway === "paytech"
-              ? "Sélectionnez votre opérateur mobile"
-              : "Choisissez votre méthode de paiement"}
-          </h2>
-
-          <RadioGroup
-            value={selectedMethod}
-            onValueChange={(v) => setSelectedMethod(v as any)}
-          >
-            <div className="space-y-4">
-              {/* Wave */}
-              <Label
-                htmlFor="wave"
-                className="flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all hover:border-blue-500"
-                style={{
-                  borderColor:
-                    selectedMethod === "wave" ? "#3B82F6" : "#E5E7EB",
-                  backgroundColor:
-                    selectedMethod === "wave" ? "#EFF6FF" : "transparent",
-                }}
-              >
-                <div className="w-16 h-12 bg-white rounded-lg border border-blue-200 flex items-center justify-center mr-4 flex-shrink-0 text-xl">
-                  🌊
-                </div>
-                <div className="flex-1">
-                  <p className="font-bold text-lg text-foreground">Wave</p>
-                  <p className="text-sm text-muted-foreground">
-                    Paiement instantané et sécurisé
-                  </p>
-                </div>
-                <RadioGroupItem value="wave" id="wave" className="ml-4" />
-              </Label>
-
-              {/* Orange Money */}
-              <Label
-                htmlFor="orange-money"
-                className="flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all hover:border-orange-500"
-                style={{
-                  borderColor:
-                    selectedMethod === "orange-money" ? "#EA580C" : "#E5E7EB",
-                  backgroundColor:
-                    selectedMethod === "orange-money"
-                      ? "#FFF7ED"
-                      : "transparent",
-                }}
-              >
-                <div className="w-16 h-12 bg-white rounded-lg border border-orange-200 flex items-center justify-center mr-4 flex-shrink-0 text-xl">
-                  🍊
-                </div>
-                <div className="flex-1">
-                  <p className="font-bold text-lg text-foreground">
-                    Orange Money
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Paiement mobile rapide
-                  </p>
-                </div>
-                <RadioGroupItem
-                  value="orange-money"
-                  id="orange-money"
-                  className="ml-4"
-                />
-              </Label>
+          <div className="flex items-start gap-4">
+            <div className="text-3xl">🏦</div>
+            <div>
+              <h3 className="font-bold text-lg text-foreground mb-2">
+                Paiement Orange Money via PayTech
+              </h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Vous serez redirigé vers PayTech pour finaliser votre paiement avec Orange Money. Le paiement est 100% sécurisé.
+              </p>
+              <div className="text-xs text-orange-700 bg-orange-100 rounded-lg p-3">
+                💡 Astuce: Assurez-vous d'avoir suffisamment de crédit Orange Money sur votre téléphone
+              </div>
             </div>
-          </RadioGroup>
+          </div>
         </motion.div>
 
         {/* Security Notice */}
