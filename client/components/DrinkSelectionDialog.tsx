@@ -47,6 +47,9 @@ export default function DrinkSelectionDialog({
               <p className="text-sm text-muted-foreground mt-1">Pour: {menuName}</p>
             </div>
           </div>
+          <DialogDescription>
+            Sélectionnez une boisson pour compléter votre commande
+          </DialogDescription>
         </DialogHeader>
 
         <div className="py-6">
