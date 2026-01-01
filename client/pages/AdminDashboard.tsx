@@ -430,7 +430,7 @@ export default function AdminDashboard() {
                     </p>
                     <p>
                       <span className="text-muted-foreground">Date/Heure :</span>{" "}
-                      {new Date(selectedOrder.createdAt).toLocaleString("fr-FR")}
+                      {new Date(selectedOrder.created_at).toLocaleString("fr-FR")}
                     </p>
                   </div>
                 </div>
