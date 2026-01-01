@@ -426,7 +426,7 @@ export default function AdminDashboard() {
                     </p>
                     <p>
                       <span className="text-muted-foreground">Type :</span>{" "}
-                      {selectedOrder.orderType === "livraison" ? "🚚 Livraison" : "📦 À emporter"}
+                      {selectedOrder.order_type === "livraison" ? "🚚 Livraison" : "📦 À emporter"}
                     </p>
                     <p>
                       <span className="text-muted-foreground">Date/Heure :</span>{" "}
