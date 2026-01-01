@@ -415,21 +415,21 @@ export default function PaymentPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.15 }}
         >
           <Button
             onClick={handlePayment}
             disabled={
               isProcessing ||
-              (paymentGateway === "paytech" &&
-                (!phoneNumber.trim() || !fullName.trim()))
+              !phoneNumber.trim() ||
+              !fullName.trim()
             }
             className="w-full h-16 bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-lg flex items-center justify-center gap-2 rounded-xl transition-all"
           >
             {isProcessing ? (
               <>
                 <Loader className="w-5 h-5 animate-spin" />
-                Connexion sécurisée...
+                Redirection sécurisée...
               </>
             ) : (
               <>
