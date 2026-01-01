@@ -116,69 +116,34 @@ export default function PaymentPage() {
     setIsProcessing(true);
 
     try {
-      // PayTech payment flow
-      const paymentInitPayload = {
-        item_name: `Commande ${order.order_number}`,
-        item_price: order.total,
-        command_name: `Commande de nourriture - ${order.items.map((i) => i.product_name).join(", ")}`,
-        target_payment: "Orange Money",
-        phone_number: phoneNumber.startsWith("+")
-          ? phoneNumber
-          : `+221${phoneNumber}`,
-        full_name: fullName,
-        custom_field: {
-          order_id: order.id,
-          user_id: `user_${Date.now()}`,
-          email: "",
-        },
-      };
+      // Update payment status to completed
+      const paymentUpdate = await payments.update(payment.id, {
+        status: "completed",
+        paid_at: new Date().toISOString(),
+        customer_name: fullName,
+        customer_phone: phoneNumber,
+      });
 
-      console.log("Sending PayTech payment request:", paymentInitPayload);
+      console.log("Payment updated:", paymentUpdate);
 
-      // Create payment via API
-      const response = await fetch(
-        "https://unskeptical-unmournfully-fawn.ngrok-free.app/api/paytech/create-payment",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(paymentInitPayload),
-        },
-      );
+      // Update order status to paid
+      const orderUpdate = await orders.update(order.id, {
+        status: "paid",
+        payment_id: payment.id,
+        customer_name: fullName,
+        customer_phone: phoneNumber,
+      });
 
-      const paymentResult = await response.json();
-      console.log("PayTech response:", paymentResult);
-
-      if (!response.ok || !paymentResult.success) {
-        const errorMsg =
-          paymentResult.message ||
-          paymentResult.error ||
-          "Erreur lors de l'initialisation du paiement PayTech";
-        toast.error(`❌ ${errorMsg}`);
-        setIsProcessing(false);
-        return;
-      }
+      console.log("Order updated:", orderUpdate);
 
       // Show success message
-      toast.success("✅ Redirection vers PayTech...");
+      toast.success("✅ Paiement enregistré! Votre commande est validée");
 
-      // Wait a moment then redirect to PayTech
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Wait a moment then redirect
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      const redirectUrl = paymentResult.redirect_url;
-      if (redirectUrl) {
-        // Update payment status
-        await payments.update(payment.id, {
-          status: "processing",
-        });
-
-        // Redirect to PayTech payment page
-        window.location.href = redirectUrl;
-      } else {
-        toast.error("❌ URL de paiement non reçue");
-        setIsProcessing(false);
-      }
+      // Redirect to success page
+      navigate("/payment-success");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Une erreur s'est produite";
