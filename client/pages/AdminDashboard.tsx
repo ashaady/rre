@@ -161,13 +161,13 @@ export default function AdminDashboard() {
   const handleExportCSV = () => {
     const headers = ["N°", "Client", "Téléphone", "Type", "Total", "Statut", "Heure"];
     const rows = filteredOrders.map((o) => [
-      o.orderNumber,
+      o.order_number,
       o.customer_name,
       o.customer_phone,
-      o.orderType === "livraison" ? "Livraison" : "À emporter",
+      o.order_type === "livraison" ? "Livraison" : "À emporter",
       `${o.total} F`,
       statusConfig[o.status].label,
-      new Date(o.createdAt).toLocaleTimeString("fr-FR"),
+      new Date(o.created_at).toLocaleTimeString("fr-FR"),
     ]);
 
     const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
