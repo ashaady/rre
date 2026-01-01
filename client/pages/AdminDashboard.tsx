@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { orders as ordersApi } from "@/lib/api";
 
 interface OrderItem {
   product_name: string;
@@ -27,89 +28,62 @@ interface OrderItem {
 
 interface Order {
   id: string;
-  orderNumber: string;
-  status: "pending" | "confirmed" | "preparing" | "ready" | "out_for_delivery" | "delivered" | "cancelled";
-  orderType: "livraison" | "emporter";
+  order_number: string;
+  status:
+    | "pending"
+    | "paid"
+    | "confirmed"
+    | "preparing"
+    | "ready"
+    | "out_for_delivery"
+    | "delivered"
+    | "cancelled";
+  order_type: "livraison" | "emporter";
   items: OrderItem[];
   total: number;
-  createdAt: string;
+  created_at: string;
   customer_name: string;
   customer_phone: string;
   delivery_address?: string;
 }
 
-// Mock orders for admin dashboard
-const mockOrders: Order[] = [
-  {
-    id: "order-1",
-    orderNumber: "CM12345678",
-    status: "ready",
-    orderType: "livraison",
-    items: [
-      { product_name: "Menu Classique", quantity: 1, price: 4500 },
-      { product_name: "Frites Sauce", quantity: 1, price: 1500 },
-    ],
-    total: 7000,
-    createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-    customer_name: "Amadou Diop",
-    customer_phone: "77 123 45 67",
-    delivery_address: "Sicap Liberté 6",
+const statusConfig: Record<
+  string,
+  { label: string; color: string; bgColor: string }
+> = {
+  pending: {
+    label: "En attente",
+    color: "bg-gray-100",
+    bgColor: "text-gray-700",
   },
-  {
-    id: "order-2",
-    orderNumber: "CM87654321",
-    status: "preparing",
-    orderType: "emporter",
-    items: [
-      { product_name: "Double Chicken", quantity: 2, price: 4500 },
-    ],
-    total: 9000,
-    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-    customer_name: "Fatou Sall",
-    customer_phone: "78 987 65 43",
+  paid: { label: "Payée", color: "bg-green-100", bgColor: "text-green-700" },
+  confirmed: {
+    label: "Confirmée",
+    color: "bg-blue-100",
+    bgColor: "text-blue-700",
   },
-  {
-    id: "order-3",
-    orderNumber: "CM55555555",
-    status: "pending",
-    orderType: "livraison",
-    items: [
-      { product_name: "Menu Famille", quantity: 1, price: 12000 },
-    ],
-    total: 13000,
-    createdAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
-    customer_name: "Cheikh Ba",
-    customer_phone: "76 111 22 33",
-    delivery_address: "Mermoz",
+  preparing: {
+    label: "En préparation",
+    color: "bg-orange-100",
+    bgColor: "text-orange-700",
   },
-  {
-    id: "order-4",
-    orderNumber: "CM44444444",
-    status: "confirmed",
-    orderType: "emporter",
-    items: [
-      { product_name: "Chicken Burger Master", quantity: 3, price: 3500 },
-      { product_name: "Frites Classiques", quantity: 2, price: 1000 },
-    ],
-    total: 12500,
-    createdAt: new Date(Date.now() - 1 * 60 * 1000).toISOString(),
-    customer_name: "Mariam Ndiaye",
-    customer_phone: "70 555 66 77",
-  },
-];
-
-const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
-  pending: { label: "En attente", color: "bg-gray-100", bgColor: "text-gray-700" },
-  confirmed: { label: "Confirmée", color: "bg-blue-100", bgColor: "text-blue-700" },
-  preparing: { label: "En préparation", color: "bg-orange-100", bgColor: "text-orange-700" },
   ready: { label: "Prête", color: "bg-purple-100", bgColor: "text-purple-700" },
-  out_for_delivery: { label: "En livraison", color: "bg-indigo-100", bgColor: "text-indigo-700" },
-  delivered: { label: "Livrée", color: "bg-green-100", bgColor: "text-green-700" },
+  out_for_delivery: {
+    label: "En livraison",
+    color: "bg-indigo-100",
+    bgColor: "text-indigo-700",
+  },
+  delivered: {
+    label: "Livrée",
+    color: "bg-green-100",
+    bgColor: "text-green-700",
+  },
   cancelled: { label: "Annulée", color: "bg-red-100", bgColor: "text-red-700" },
 };
 
 const nextStatusMap: Record<string, string> = {
   pending: "confirmed",
+  paid: "confirmed",
   confirmed: "preparing",
   preparing: "ready",
   ready: "out_for_delivery",
@@ -117,24 +91,50 @@ const nextStatusMap: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
+
+  // Fetch orders from API
+  useEffect(() => {
+    const loadOrders = async () => {
+      try {
+        // In a real app, you'd have an endpoint that returns all orders
+        // For now, we'll load from localStorage where orders are stored
+        const storedOrders = localStorage.getItem("adminOrders");
+        if (storedOrders) {
+          const parsedOrders = JSON.parse(storedOrders);
+          setOrders(parsedOrders);
+        }
+      } catch (error) {
+        console.error("Failed to load orders:", error);
+      } finally {
+        setIsLoadingOrders(false);
+      }
+    };
+
+    loadOrders();
+
+    // Poll for new orders every 3 seconds
+    const interval = setInterval(loadOrders, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Calculate stats
   const stats = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const ordersToday = orders.filter(
-      (o) => new Date(o.createdAt) >= today
-    );
+    const ordersToday = orders.filter((o) => new Date(o.created_at) >= today);
 
     const activeOrders = orders.filter(
-      (o) => !["delivered", "cancelled"].includes(o.status)
+      (o) => !["delivered", "cancelled"].includes(o.status),
     );
 
-    const revenue = ordersToday.reduce((sum, o) => sum + o.total, 0);
+    const paidOrders = ordersToday.filter((o) => o.status === "paid");
+
+    const revenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
 
     return {
       total: ordersToday.length,
@@ -149,14 +149,20 @@ export default function AdminDashboard() {
     switch (selectedFilter) {
       case "pending":
         return orders.filter((o) => o.status === "pending");
+      case "paid":
+        return orders.filter((o) => o.status === "paid");
       case "preparing":
-        return orders.filter((o) => ["confirmed", "preparing"].includes(o.status));
+        return orders.filter((o) =>
+          ["confirmed", "preparing"].includes(o.status),
+        );
       case "ready":
         return orders.filter((o) => o.status === "ready");
       case "delivery":
         return orders.filter((o) => o.status === "out_for_delivery");
       case "completed":
-        return orders.filter((o) => ["delivered", "cancelled"].includes(o.status));
+        return orders.filter((o) =>
+          ["delivered", "cancelled"].includes(o.status),
+        );
       default:
         return orders;
     }
@@ -167,33 +173,46 @@ export default function AdminDashboard() {
     return {
       all: orders.length,
       pending: orders.filter((o) => o.status === "pending").length,
-      preparing: orders.filter((o) => ["confirmed", "preparing"].includes(o.status)).length,
+      paid: orders.filter((o) => o.status === "paid").length,
+      preparing: orders.filter((o) =>
+        ["confirmed", "preparing"].includes(o.status),
+      ).length,
       ready: orders.filter((o) => o.status === "ready").length,
       delivery: orders.filter((o) => o.status === "out_for_delivery").length,
-      completed: orders.filter((o) => ["delivered", "cancelled"].includes(o.status)).length,
+      completed: orders.filter((o) =>
+        ["delivered", "cancelled"].includes(o.status),
+      ).length,
     };
   }, [orders]);
 
   const handleStatusUpdate = (orderId: string, newStatus: string) => {
     setOrders((prev) =>
       prev.map((o) =>
-        o.id === orderId ? { ...o, status: newStatus as any } : o
-      )
+        o.id === orderId ? { ...o, status: newStatus as any } : o,
+      ),
     );
     setSelectedOrder(null);
     toast.success(`Commande mise à jour - ${statusConfig[newStatus].label}`);
   };
 
   const handleExportCSV = () => {
-    const headers = ["N°", "Client", "Téléphone", "Type", "Total", "Statut", "Heure"];
+    const headers = [
+      "N°",
+      "Client",
+      "Téléphone",
+      "Type",
+      "Total",
+      "Statut",
+      "Heure",
+    ];
     const rows = filteredOrders.map((o) => [
-      o.orderNumber,
+      o.order_number,
       o.customer_name,
       o.customer_phone,
-      o.orderType === "livraison" ? "Livraison" : "À emporter",
+      o.order_type === "livraison" ? "Livraison" : "À emporter",
       `${o.total} F`,
       statusConfig[o.status].label,
-      new Date(o.createdAt).toLocaleTimeString("fr-FR"),
+      new Date(o.created_at).toLocaleTimeString("fr-FR"),
     ]);
 
     const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
@@ -218,10 +237,15 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-black">Dashboard Admin</h1>
               <div className="flex items-center gap-2 ml-4 px-3 py-1 bg-white/10 rounded-full">
                 <div className="w-2 h-2 bg-chicken-green rounded-full animate-pulse" />
-                <span className="text-sm font-semibold">Commandes en direct</span>
+                <span className="text-sm font-semibold">
+                  Commandes en direct
+                </span>
               </div>
             </div>
-            <Button variant="outline" className="text-white border-white hover:bg-white/10">
+            <Button
+              variant="outline"
+              className="text-white border-white hover:bg-white/10"
+            >
               <LogOut className="w-4 h-4 mr-2" />
               Déconnexion
             </Button>
@@ -267,10 +291,14 @@ export default function AdminDashboard() {
               >
                 <Card className="overflow-hidden">
                   <CardContent className="p-6">
-                    <div className={`bg-gradient-to-br ${stat.color} p-3 rounded-lg w-fit mb-3`}>
+                    <div
+                      className={`bg-gradient-to-br ${stat.color} p-3 rounded-lg w-fit mb-3`}
+                    >
                       <div className="text-white">{stat.icon}</div>
                     </div>
-                    <p className="text-sm text-muted-foreground">{stat.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {stat.title}
+                    </p>
                     <p className="text-2xl font-bold text-foreground mt-1">
                       {stat.value}
                     </p>
@@ -288,10 +316,11 @@ export default function AdminDashboard() {
           {/* Filters */}
           <div className="mb-6 flex items-center justify-between">
             <Tabs value={selectedFilter} onValueChange={setSelectedFilter}>
-              <TabsList className="grid grid-cols-3 md:grid-cols-6">
+              <TabsList className="grid grid-cols-3 md:grid-cols-7">
                 {[
                   { id: "all", label: "Toutes" },
                   { id: "pending", label: "Nouvelles" },
+                  { id: "paid", label: "Payées" },
                   { id: "preparing", label: "Préparation" },
                   { id: "ready", label: "Prêtes" },
                   { id: "delivery", label: "Livraison" },
@@ -340,10 +369,12 @@ export default function AdminDashboard() {
                           {/* Order Number */}
                           <div className="min-w-0">
                             <p className="font-bold text-foreground">
-                              #{order.orderNumber}
+                              #{order.order_number}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              {new Date(order.createdAt).toLocaleTimeString("fr-FR")}
+                              {new Date(order.created_at).toLocaleTimeString(
+                                "fr-FR",
+                              )}
                             </p>
                           </div>
 
@@ -361,9 +392,15 @@ export default function AdminDashboard() {
                           <div>
                             <Badge
                               variant="outline"
-                              className={order.orderType === "livraison" ? "bg-blue-50" : "bg-green-50"}
+                              className={
+                                order.order_type === "livraison"
+                                  ? "bg-blue-50"
+                                  : "bg-green-50"
+                              }
                             >
-                              {order.orderType === "livraison" ? "🚚 Livraison" : "📦 À emporter"}
+                              {order.order_type === "livraison"
+                                ? "🚚 Livraison"
+                                : "📦 À emporter"}
                             </Badge>
                           </div>
 
@@ -377,7 +414,9 @@ export default function AdminDashboard() {
                           {/* Status */}
                           <div>
                             <Badge className={statusConfig[order.status].color}>
-                              <span className={statusConfig[order.status].bgColor}>
+                              <span
+                                className={statusConfig[order.status].bgColor}
+                              >
                                 {statusConfig[order.status].label}
                               </span>
                             </Badge>
@@ -385,19 +424,21 @@ export default function AdminDashboard() {
 
                           {/* Quick Actions */}
                           <div className="flex gap-2">
-                            {order.status !== "delivered" && order.status !== "cancelled" && (
-                              <Button
-                                size="sm"
-                                className="bg-primary hover:bg-primary/90"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  const next = nextStatusMap[order.status];
-                                  if (next) handleStatusUpdate(order.id, next);
-                                }}
-                              >
-                                <Check className="w-4 h-4" />
-                              </Button>
-                            )}
+                            {order.status !== "delivered" &&
+                              order.status !== "cancelled" && (
+                                <Button
+                                  size="sm"
+                                  className="bg-primary hover:bg-primary/90"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const next = nextStatusMap[order.status];
+                                    if (next)
+                                      handleStatusUpdate(order.id, next);
+                                  }}
+                                >
+                                  <Check className="w-4 h-4" />
+                                </Button>
+                              )}
                           </div>
                         </div>
                       </CardContent>
@@ -406,7 +447,9 @@ export default function AdminDashboard() {
                 ))
               ) : (
                 <div className="text-center py-12">
-                  <p className="text-muted-foreground">Aucune commande dans ce filtre</p>
+                  <p className="text-muted-foreground">
+                    Aucune commande dans ce filtre
+                  </p>
                 </div>
               )}
             </AnimatePresence>
@@ -424,7 +467,7 @@ export default function AdminDashboard() {
           >
             <div className="sticky top-0 bg-white border-b border-border p-6 flex items-center justify-between">
               <h2 className="text-2xl font-bold">
-                Commande #{selectedOrder.orderNumber}
+                Commande #{selectedOrder.order_number}
               </h2>
               <button
                 onClick={() => setSelectedOrder(null)}
@@ -439,23 +482,35 @@ export default function AdminDashboard() {
               <div className="md:col-span-2 space-y-6">
                 {/* Order Info */}
                 <div>
-                  <h3 className="font-bold text-lg mb-3">Informations commande</h3>
+                  <h3 className="font-bold text-lg mb-3">
+                    Informations commande
+                  </h3>
                   <div className="space-y-2 text-sm">
                     <p>
                       <span className="text-muted-foreground">Statut :</span>{" "}
-                      <Badge className={statusConfig[selectedOrder.status].color}>
-                        <span className={statusConfig[selectedOrder.status].bgColor}>
+                      <Badge
+                        className={statusConfig[selectedOrder.status].color}
+                      >
+                        <span
+                          className={statusConfig[selectedOrder.status].bgColor}
+                        >
                           {statusConfig[selectedOrder.status].label}
                         </span>
                       </Badge>
                     </p>
                     <p>
                       <span className="text-muted-foreground">Type :</span>{" "}
-                      {selectedOrder.orderType === "livraison" ? "🚚 Livraison" : "📦 À emporter"}
+                      {selectedOrder.order_type === "livraison"
+                        ? "🚚 Livraison"
+                        : "📦 À emporter"}
                     </p>
                     <p>
-                      <span className="text-muted-foreground">Date/Heure :</span>{" "}
-                      {new Date(selectedOrder.createdAt).toLocaleString("fr-FR")}
+                      <span className="text-muted-foreground">
+                        Date/Heure :
+                      </span>{" "}
+                      {new Date(selectedOrder.created_at).toLocaleString(
+                        "fr-FR",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -528,17 +583,18 @@ export default function AdminDashboard() {
                     WhatsApp
                   </a>
 
-                  {selectedOrder.status !== "delivered" && selectedOrder.status !== "cancelled" && (
-                    <Button
-                      onClick={() => {
-                        const next = nextStatusMap[selectedOrder.status];
-                        if (next) handleStatusUpdate(selectedOrder.id, next);
-                      }}
-                      className="w-full bg-primary text-white hover:bg-primary/90"
-                    >
-                      Étape suivante
-                    </Button>
-                  )}
+                  {selectedOrder.status !== "delivered" &&
+                    selectedOrder.status !== "cancelled" && (
+                      <Button
+                        onClick={() => {
+                          const next = nextStatusMap[selectedOrder.status];
+                          if (next) handleStatusUpdate(selectedOrder.id, next);
+                        }}
+                        className="w-full bg-primary text-white hover:bg-primary/90"
+                      >
+                        Étape suivante
+                      </Button>
+                    )}
                 </div>
               </div>
             </div>

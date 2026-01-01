@@ -45,6 +45,9 @@ export default function PaymentPage() {
   const [payment, setPayment] = useState<Payment | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    "wave" | "orange-money"
+  >("wave");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -115,69 +118,61 @@ export default function PaymentPage() {
     setIsProcessing(true);
 
     try {
-      // PayTech payment flow
-      const paymentInitPayload = {
-        item_name: `Commande ${order.order_number}`,
-        item_price: order.total,
-        command_name: `Commande de nourriture - ${order.items.map((i) => i.product_name).join(", ")}`,
-        target_payment: "Orange Money",
-        phone_number: phoneNumber.startsWith("+")
-          ? phoneNumber
-          : `+221${phoneNumber}`,
-        full_name: fullName,
-        custom_field: {
-          order_id: order.id,
-          user_id: `user_${Date.now()}`,
-          email: "",
-        },
+      // Update payment status to completed
+      const paymentUpdate = await payments.update(payment.id, {
+        status: "completed",
+        paid_at: new Date().toISOString(),
+        customer_name: fullName,
+        customer_phone: phoneNumber,
+      });
+
+      console.log("Payment updated:", paymentUpdate);
+
+      // Update order status to paid
+      const orderUpdate = await orders.update(order.id, {
+        status: "paid",
+        payment_id: payment.id,
+        customer_name: fullName,
+        customer_phone: phoneNumber,
+      });
+
+      console.log("Order updated:", orderUpdate);
+
+      // Save order to localStorage for admin dashboard
+      const adminOrders = JSON.parse(
+        localStorage.getItem("adminOrders") || "[]",
+      );
+      const updatedOrder = {
+        id: order.id,
+        order_number: order.order_number,
+        status: "paid",
+        order_type: order.order_type,
+        items: order.items,
+        total: order.total,
+        created_at: order.created_at || new Date().toISOString(),
+        customer_name: fullName,
+        customer_phone: phoneNumber,
+        delivery_address: order.delivery_address,
       };
 
-      console.log("Sending PayTech payment request:", paymentInitPayload);
-
-      // Create payment via API
-      const response = await fetch(
-        "https://unskeptical-unmournfully-fawn.ngrok-free.app/api/paytech/create-payment",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(paymentInitPayload),
-        },
-      );
-
-      const paymentResult = await response.json();
-      console.log("PayTech response:", paymentResult);
-
-      if (!response.ok || !paymentResult.success) {
-        const errorMsg =
-          paymentResult.message ||
-          paymentResult.error ||
-          "Erreur lors de l'initialisation du paiement PayTech";
-        toast.error(`❌ ${errorMsg}`);
-        setIsProcessing(false);
-        return;
+      // Check if order exists, if not add it
+      const orderIndex = adminOrders.findIndex((o: any) => o.id === order.id);
+      if (orderIndex !== -1) {
+        adminOrders[orderIndex] = updatedOrder;
+      } else {
+        adminOrders.push(updatedOrder);
       }
+
+      localStorage.setItem("adminOrders", JSON.stringify(adminOrders));
 
       // Show success message
-      toast.success("✅ Redirection vers PayTech...");
+      toast.success("✅ Paiement enregistré! Votre commande est validée");
 
-      // Wait a moment then redirect to PayTech
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Wait a moment then redirect
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      const redirectUrl = paymentResult.redirect_url;
-      if (redirectUrl) {
-        // Update payment status
-        await payments.update(payment.id, {
-          status: "processing",
-        });
-
-        // Redirect to PayTech payment page
-        window.location.href = redirectUrl;
-      } else {
-        toast.error("❌ URL de paiement non reçue");
-        setIsProcessing(false);
-      }
+      // Redirect to success page
+      navigate("/payment-success");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Une erreur s'est produite";
@@ -234,24 +229,6 @@ export default function PaymentPage() {
       </header>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Menu Image */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-lg p-6 mb-6"
-        >
-          <h2 className="text-2xl font-bold text-foreground mb-4">
-            Notre Menu
-          </h2>
-          <div className="rounded-lg overflow-hidden shadow-md">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets%2F19945f87741e40b398843fe8ba0a7879%2F6218ca500fe641c38096229d876951bc?format=webp&width=800"
-              alt="Menu Chicken Master"
-              className="w-full h-auto"
-            />
-          </div>
-        </motion.div>
-
         {/* Order Summary */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -386,27 +363,64 @@ export default function PaymentPage() {
           </div>
         </motion.div>
 
-        {/* Payment Method Info */}
+        {/* Payment Methods Selection */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="bg-orange-50 border border-orange-200 rounded-2xl p-6 mb-6"
+          className="bg-white rounded-2xl shadow-lg p-6 mb-6"
         >
-          <div className="flex items-start gap-4">
-            <div className="text-3xl">🏦</div>
-            <div>
-              <h3 className="font-bold text-lg text-foreground mb-2">
-                Paiement Orange Money via PayTech
-              </h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Vous serez redirigé vers PayTech pour finaliser votre paiement
-                avec Orange Money. Le paiement est 100% sécurisé.
-              </p>
-              <div className="text-xs text-orange-700 bg-orange-100 rounded-lg p-3">
-                💡 Astuce: Assurez-vous d'avoir suffisamment de crédit Orange
-                Money sur votre téléphone
+          <h2 className="text-lg font-bold text-foreground mb-4">
+            Choisir un moyen de paiement
+          </h2>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Wave Payment Method */}
+            <div
+              onClick={() => setSelectedPaymentMethod("wave")}
+              className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                selectedPaymentMethod === "wave"
+                  ? "border-blue-400 bg-blue-50"
+                  : "border-gray-200 bg-gray-50 hover:border-blue-300"
+              }`}
+            >
+              <div className="flex items-center justify-center mb-3 h-20">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2Faa863263f8dd4e679906a3ae8955c398%2F21167024e2e849aba26619ba5d2bdd7a?format=webp&width=200"
+                  alt="Wave"
+                  className="h-full object-contain"
+                />
               </div>
+              <p className="text-sm font-semibold text-center text-foreground">
+                Wave
+              </p>
+              <p className="text-xs text-muted-foreground text-center mt-1">
+                Paiement mobile
+              </p>
+            </div>
+
+            {/* Maxit Payment Method */}
+            <div
+              onClick={() => setSelectedPaymentMethod("orange-money")}
+              className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                selectedPaymentMethod === "orange-money"
+                  ? "border-orange-500 bg-orange-50"
+                  : "border-gray-200 bg-gray-50 hover:border-orange-300"
+              }`}
+            >
+              <div className="flex items-center justify-center mb-3 h-20">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2Faa863263f8dd4e679906a3ae8955c398%2F3af5ad99343c47be8e03a78bd4c17ff6?format=webp&width=200"
+                  alt="Maxit"
+                  className="h-full object-contain"
+                />
+              </div>
+              <p className="text-sm font-semibold text-center text-foreground">
+                Maxit
+              </p>
+              <p className="text-xs text-muted-foreground text-center mt-1">
+                Porte-monnaie numérique
+              </p>
             </div>
           </div>
         </motion.div>
@@ -424,8 +438,8 @@ export default function PaymentPage() {
               🛡️ Paiement 100% sécurisé
             </p>
             <p className="text-sm text-green-700 mt-1">
-              Vos données sont protégées et cryptées. Vous serez redirigé vers
-              PayTech pour compléter votre paiement.
+              Vos données sont protégées et cryptées. Cliquez sur le bouton
+              ci-dessous pour valider votre commande.
             </p>
           </div>
         </motion.div>
@@ -444,12 +458,12 @@ export default function PaymentPage() {
             {isProcessing ? (
               <>
                 <Loader className="w-5 h-5 animate-spin" />
-                Redirection sécurisée...
+                Enregistrement du paiement...
               </>
             ) : (
               <>
                 <Lock className="w-5 h-5" />
-                Payer {order.total.toLocaleString()} F
+                Valider le paiement - {order.total.toLocaleString()} F
               </>
             )}
           </Button>
