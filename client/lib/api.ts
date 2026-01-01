@@ -165,13 +165,6 @@ class PayTechClient {
 
 export const payTechClient = new PayTechClient();
 
-// PayDunya API endpoints
-export const paydunya = {
-  initialize: (payload: any) => apiClient.post("/paydunya/initialize", payload),
-  verify: (token: string) => apiClient.get(`/paydunya/verify/${token}`),
-  callback: (payload: any) => apiClient.post("/paydunya/callback", payload),
-};
-
 // PayTech API endpoints
 export const paytech = {
   createPayment: (payload: any) => payTechClient.post("/paytech/create-payment", payload),
